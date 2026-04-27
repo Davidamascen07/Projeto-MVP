@@ -1,0 +1,30 @@
+# Dependências
+node_modules/
+
+# Variáveis de ambiente — NUNCA commitar chaves privadas
+.env
+
+# Artefatos de compilação do Hardhat
+artifacts/
+cache/
+typechain/
+typechain-types/
+
+# Cobertura de testes
+coverage/
+coverage.json
+
+# Logs
+*.log
+npm-debug.log*
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+
+# Deploy local temporário
+deployments/localhost/
