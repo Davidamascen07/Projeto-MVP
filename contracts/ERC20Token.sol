@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.25;
 
 /**
  * @title AcadToken (ACAD) — Token ERC-20 do protocolo acadêmico

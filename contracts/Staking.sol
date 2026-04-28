@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.25;
 
 /**
  * @title AcadStaking — Contrato de Staking com recompensa dinâmica via Chainlink

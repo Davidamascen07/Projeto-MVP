@@ -7,7 +7,8 @@ const { ethers } = require("hardhat");
 async function main() {
   const signers = await ethers.getSigners();
   const proposer = signers[0];
-  const voter    = signers[1] || signers[0]; // segundo signer ou o mesmo
+  // Usa o mesmo signer para votar — em produção seriam carteiras diferentes
+  const voter    = signers[0];
 
   const govAddress   = process.env.GOVERNANCE_ADDRESS;
   const tokenAddress = process.env.TOKEN_ADDRESS;
