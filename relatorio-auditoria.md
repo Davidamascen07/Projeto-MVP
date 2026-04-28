@@ -3,7 +3,7 @@
 **Projeto:** ACAD Protocol  
 **Aluno:** David Damasceno da Frota  
 **Data:** Abril/2026  
-**Versão Solidity:** ^0.8.20  
+**Versão Solidity:** ^0.8.25  
 **Ferramentas:** Análise manual + Slither + Mythril + Hardhat
 
 ---
