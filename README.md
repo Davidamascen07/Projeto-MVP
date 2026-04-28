@@ -115,14 +115,16 @@ O contrato `AcadStaking` consome o feed **ETH/USD** da Chainlink:
 
 ## Endereços na Testnet Sepolia
 
-> Preencher após o deploy com `npx hardhat run scripts/deploy.js --network sepolia`
+> Deploy realizado em 27/04/2026 | Deployer: `0xEBe73c58B63a20622418c2800e6dDA32aD5A52FB`  
+> Setup completo: MINTER_ROLE concedido + 200.000 ACAD depositados como recompensas ✓
 
 | Contrato | Endereço | Explorer |
 |---|---|---|
-| AcadToken | `0x...` | [Etherscan]() |
-| AcademicCertificate | `0x...` | [Etherscan]() |
-| AcadStaking | `0x...` | [Etherscan]() |
-| AcadGovernance | `0x...` | [Etherscan]() |
+| AcadToken (ERC-20) | `0x468AA5C2e59D5a503d8aa35a4fF0808882e7CC5D` | [Etherscan](https://sepolia.etherscan.io/address/0x468AA5C2e59D5a503d8aa35a4fF0808882e7CC5D) |
+| AcademicCertificate (ERC-721) | `0x5ed7B7a93C67915751cB6A01453aF1CF9Bb605EE` | [Etherscan](https://sepolia.etherscan.io/address/0x5ed7B7a93C67915751cB6A01453aF1CF9Bb605EE) |
+| AcadStaking | `0x57031f4631526368d53Cf09CFaf5C68722ABE9FD` | [Etherscan](https://sepolia.etherscan.io/address/0x57031f4631526368d53Cf09CFaf5C68722ABE9FD) |
+| AcadGovernance (DAO) | `0x3BA9646636ebE72B4fC636C0b13808A2A873e503` | [Etherscan](https://sepolia.etherscan.io/address/0x3BA9646636ebE72B4fC636C0b13808A2A873e503) |
+| Chainlink ETH/USD | `0x694AA1769357215DE4FAC081bf1f309aDC325306` | [Etherscan](https://sepolia.etherscan.io/address/0x694AA1769357215DE4FAC081bf1f309aDC325306) |
 
 ---
 

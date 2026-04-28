@@ -18,7 +18,10 @@ module.exports = {
     // Testnet Sepolia — configure no .env
     sepolia: {
       url: process.env.SEPOLIA_RPC_URL || "",
-      accounts: process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : [],
+      accounts:
+        process.env.PRIVATE_KEY && process.env.PRIVATE_KEY.replace(/^0x/, "").length === 64
+          ? [process.env.PRIVATE_KEY]
+          : [],
       chainId: 11155111,
     },
   },
