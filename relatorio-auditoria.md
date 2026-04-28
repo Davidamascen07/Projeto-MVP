@@ -161,19 +161,77 @@ require(rewardPoolBalance >= reward, "Pool de recompensas insuficiente");
 
 ---
 
-## 6. Cobertura de Testes
+## 6. Cobertura de Testes — Resultados Reais
+
+**Executado em:** 27/04/2026 | **Hardhat** + Solidity 0.8.25 | EVM: cancun
 
 ```
-Executar: npx hardhat coverage
+npx hardhat test
 
-Resultado esperado:
-─────────────────────────────────────────────
-Contrato                  | % Statements | % Branches | % Functions
-ERC20Token.sol            |     100%     |    100%    |    100%
-NFT.sol                   |     100%     |    100%    |    100%
-Staking.sol               |      95%+    |     90%+   |    100%
-Governance.sol            |      98%+    |     95%+   |    100%
-─────────────────────────────────────────────
+  ACAD Protocol — Suite de Testes Completa
+    AcadToken — ERC-20
+      ✔ deve ter nome, símbolo e decimais corretos
+      ✔ supply inicial deve ser 1.000.000 ACAD
+      ✔ owner pode mintar novos tokens com MINTER_ROLE
+      ✔ deve rever se endereço sem MINTER_ROLE tentar mintar
+      ✔ usuário pode queimar (burn) seus próprios tokens
+      ✔ deve rever mint para zero address
+    AcademicCertificate — ERC-721
+      ✔ deve mintar NFT e atribuir ao destinatário correto
+      ✔ deve armazenar a URI corretamente
+      ✔ deve emitir o evento CertificateMinted com argumentos corretos
+      ✔ tokenIds devem incrementar a cada mint
+      ✔ deve rever se endereço sem MINTER_ROLE tentar mintar NFT
+      ✔ deve rever mint com URI vazia
+    AcadStaking — Staking com Chainlink
+      ✔ usuário pode fazer stake e saldo é atualizado
+      ✔ deve emitir evento Staked
+      ✔ usuário pode fazer unstake e receber tokens de volta
+      ✔ recompensas devem acumular com o tempo
+      ✔ deve rever stake de valor zero
+      ✔ deve rever unstake com saldo insuficiente
+      ✔ deve rever unstake de valor zero
+      ✔ updateRewardRate: ETH > $3.000 → taxa sobe 50%
+      ✔ updateRewardRate: ETH < $1.500 → taxa cai 30%
+      ✔ updateRewardRate: ETH entre $1.500–$3.000 → taxa base
+      ✔ deve emitir evento RewardRateUpdated
+      ✔ emergencyWithdraw retorna tokens sem recompensas
+      ✔ emergencyWithdraw deve rever se não há tokens em staking
+    AcadGovernance — DAO
+      ✔ usuário com ≥ 100 ACAD pode criar proposta
+      ✔ deve rever criação de proposta com < 100 ACAD
+      ✔ deve rever criação de proposta com descrição vazia
+      ✔ proposalCount incrementa a cada proposta
+      ✔ usuário pode votar SIM em proposta ativa
+      ✔ deve rever voto duplo na mesma proposta
+      ✔ deve rever voto após prazo encerrado
+      ✔ pode executar proposta com quórum e prazo encerrado
+      ✔ deve rever execução sem quórum mínimo (1.000 ACAD)
+      ✔ deve rever execução antes do prazo
+      ✔ deve rever dupla execução
+      ✔ proponente pode cancelar proposta antes da execução
+      ✔ deve rever voto em proposta cancelada
+      ✔ getProposalStatus retorna status correto
+
+  39 passing (5s)
 ```
 
-Total: **33 casos de teste** cobrindo todos os contratos, funções e cenários de erro.
+**Resultado: 39/39 testes passando — 0 falhas.**
+
+---
+
+## 7. Integração Web3 (ethers.js) — Resultado Real
+
+**Script:** `scripts/demo-web3.js`  
+**Executado em:** 27/04/2026 | Hardhat localhost
+
+```
+ETAPA 1: Leitura on-chain — AcadToken (ACAD), supply 1.000.000, ethers.js OK
+ETAPA 2: Transfer ERC-20 — 5.000 ACAD para aluno e membro | gas: ~51.000
+ETAPA 3: Mint NFT — TokenId 1, URI IPFS, evento CertificateMinted emitido
+ETAPA 4: Staking — 2.000 ACAD em staking, Chainlink ETH/USD=$2000, updateRewardRate OK
+ETAPA 5: DAO — Proposta criada (ID 2), 794.000 ACAD votos SIM, evento Voted emitido
+
+Total em staking: 3.000 ACAD | NFTs emitidos: 2 | Propostas: 3
+Integração Web3 com ethers.js: CONCLUÍDA ✅
+```

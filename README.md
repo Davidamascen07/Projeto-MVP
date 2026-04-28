@@ -20,23 +20,45 @@ O **ACAD Protocol** é um protocolo descentralizado que:
 ## Arquitetura
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                       ACAD Protocol                         │
-├──────────────┬──────────────┬─────────────┬─────────────────┤
-│  ERC20Token  │     NFT      │   Staking   │   Governance    │
-│  (AcadToken) │(Certificate) │ (AcadStake) │  (AcadGov DAO)  │
-│   ACAD/ERC20 │  CERT/ERC721 │ Reward Pool │ Proposals+Votes │
-└──────┬───────┴──────────────┴──────┬──────┴─────────────────┘
-       │  MINTER_ROLE                │ Chainlink Oracle
-       │  (mint rewards)             │ ETH/USD Price Feed
-       └─────────────────────────────┘
+ ┌──────────────────────────────────────────────────────────────┐
+ │                    ACAD Protocol MVP                         │
+ │                                                              │
+ │   ┌────────────┐   MINTER_ROLE   ┌────────────────────┐     │
+ │   │ AcadToken  │◄───────────────►│    AcadStaking     │     │
+ │   │  (ERC-20)  │  mint rewards   │  ReentrancyGuard   │     │
+ │   │  ACAD      │                 │  Ownable           │     │
+ │   └─────┬──────┘                 └─────────┬──────────┘     │
+ │         │ balanceOf                        │ latestRoundData│
+ │         │ transfer                         ▼                │
+ │         │              ┌─────────────────────────────────┐  │
+ │         │              │   Chainlink Price Feed          │  │
+ │         │              │   ETH/USD (AggregatorV3)        │  │
+ │         │              │   Sepolia: 0x694AA...325306     │  │
+ │         │              └─────────────────────────────────┘  │
+ │         │                                                    │
+ │         ▼                                                    │
+ │   ┌─────────────────┐         ┌────────────────────────┐    │
+ │   │AcademicCertif.  │         │    AcadGovernance      │    │
+ │   │  (ERC-721)      │         │    (DAO)               │    │
+ │   │  NFT Cert CERT  │         │  createProposal()      │    │
+ │   │  IPFS Metadata  │         │  vote()                │    │
+ │   └─────────────────┘         │  execute()             │    │
+ │                                └────────────────────────┘    │
+ │                                                              │
+ │  ┌───────────────────────────────────────────────────────┐  │
+ │  │         Backend Web3 (ethers.js — demo-web3.js)       │  │
+ │  │  mint NFT │ stake tokens │ vote DAO │ read oracle     │  │
+ │  └───────────────────────────────────────────────────────┘  │
+ └──────────────────────────────────────────────────────────────┘
 ```
 
 **Fluxo principal:**
-1. Admin distribui ACAD tokens para alunos.
-2. Professor (MINTER_ROLE) minta NFT certificado para aluno formado.
-3. Aluno faz stake de ACAD → acumula recompensas (taxa ajustada pelo preço ETH/USD).
-4. Detentor de ACAD cria proposta na DAO → membros votam → resultado executado on-chain.
+1. Admin distribui ACAD tokens (ERC-20) para alunos via `transfer()`.
+2. Professor (MINTER_ROLE) minta NFT certificado para aluno formado via `mintCertificate()`.
+3. Aluno aprova e faz `stake()` de ACAD → acumula recompensas ao longo do tempo.
+4. `updateRewardRate()` consulta Chainlink ETH/USD e ajusta a taxa dinamicamente.
+5. Detentor de ACAD cria proposta na DAO → membros votam com peso proporcional ao saldo → resultado executado on-chain após prazo.
+6. Script `demo-web3.js` (ethers.js) demonstra todo o fluxo de forma integrada.
 
 ---
 
@@ -149,7 +171,13 @@ cp .env.example .env
 npx hardhat run scripts/deploy.js --network sepolia
 ```
 
-### Interagir com os contratos
+### Demonstração Web3 completa (ethers.js)
+```bash
+# Roda toda a integração: distribuição, mint NFT, stake, oráculo e DAO
+npx hardhat run scripts/demo-web3.js --network localhost
+```
+
+### Interagir individualmente
 ```bash
 # Mintar certificado NFT
 NFT_ADDRESS=0x... RECIPIENT=0x... TOKEN_URI=ipfs://... \
@@ -171,20 +199,22 @@ GOVERNANCE_ADDRESS=0x... TOKEN_ADDRESS=0x... \
 ```
 projeto-mvp/
 ├── contracts/
-│   ├── ERC20Token.sol          # Token ACAD (ERC-20)
-│   ├── NFT.sol                 # Certificado (ERC-721)
-│   ├── Staking.sol             # Staking + Chainlink
-│   ├── Governance.sol          # DAO
+│   ├── ERC20Token.sol          # Token ACAD (ERC-20 + AccessControl)
+│   ├── NFT.sol                 # Certificado (ERC-721 + URIStorage)
+│   ├── Staking.sol             # Staking + Chainlink + ReentrancyGuard
+│   ├── Governance.sol          # DAO (proposta, voto, execução)
 │   └── mocks/
-│       └── MockV3Aggregator.sol  # Mock do oráculo (testes)
+│       └── MockV3Aggregator.sol  # Mock do oráculo (somente testes)
 ├── scripts/
-│   ├── deploy.js               # Deploy de todos os contratos
+│   ├── deploy.js               # Deploy completo (localhost + Sepolia)
+│   ├── demo-web3.js            # Integração Web3 completa (ethers.js)
 │   ├── mint.js                 # Mint de NFT
-│   ├── stake.js                # Stake de tokens
-│   └── vote.js                 # Criar proposta e votar
+│   ├── stake.js                # Stake de tokens + Chainlink
+│   └── vote.js                 # Criar proposta e votar na DAO
 ├── test/
-│   └── MVPTest.js              # Suite de testes (33 casos)
+│   └── MVPTest.js              # Suite de testes (39 casos — 100% passando)
 ├── .env.example
+├── .gitignore
 ├── hardhat.config.js
 ├── package.json
 ├── relatorio-auditoria.md
